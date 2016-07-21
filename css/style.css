@@ -2,29 +2,3 @@ body {
 	margin: 0;
 	background-color: #333333
 }
-
-#svg {
-	width: 100%;
-	height: 100%;
-	position: absolute;
-
-	font-size: 90px;
-}
-
-#beaker {
-	position: absolute;
-	left: 10px;
-	top: 10px;
-	width: 100px;
-	height: 100px;
-}
-
-#svg2 {
-	position: absolute;
-	left: 10px;
-	top: 10px;
-}
-
-circle {
-	shape-rendering: optimizeSpeed;
-}
