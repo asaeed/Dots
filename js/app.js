@@ -1,4 +1,4 @@
-var gridGap = 100, gridW = 20, gridH = 20;
+var gridGap = 100, gridW = 40, gridH = 18;
 
 var container, stats;
 var camera, scene, renderer, controls;
@@ -31,7 +31,7 @@ function init() {
     camera.up = new THREE.Vector3(0, 1, 0);
     camera.lookAt(scene.position);
 
-    dotController = new DotController(scene, gridW, gridH, gridGap, wavesAnimator)
+    dotController = new DotController(scene, gridW, gridH, gridGap, mouseAnimator)
     dotController.setup();
 
     renderer = new THREE.CanvasRenderer();
