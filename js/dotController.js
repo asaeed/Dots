@@ -1,8 +1,4 @@
 
-const barker = (state) => ({
-    bark: () => console.log('Woof, I am ' + state.name)
-})
-
 const wavesAnimator = {
     update: (controller) => {
         var c = controller;

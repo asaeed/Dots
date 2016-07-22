@@ -1,7 +1,9 @@
-var gridGap = 100, gridW = 40, gridH = 18;
+var gridGap = 100, gridW = 400, gridH = 180;
 
 var container, stats;
 var camera, scene, renderer, controls;
+
+var textureLoader = new THREE.TextureLoader();
 
 var dotController;
 
@@ -31,10 +33,10 @@ function init() {
     camera.up = new THREE.Vector3(0, 1, 0);
     camera.lookAt(scene.position);
 
-    dotController = new DotController(scene, gridW, gridH, gridGap, mouseAnimator)
+    dotController = new DotController(scene, gridW, gridH, gridGap, wavesAnimator)
     dotController.setup();
 
-    renderer = new THREE.CanvasRenderer();
+    renderer = new THREE.WebGLRenderer();
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(ww, wh);
     container.appendChild(renderer.domElement);
