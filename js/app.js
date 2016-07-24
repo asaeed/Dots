@@ -1,7 +1,8 @@
-var gridGap = 100, gridW = 400, gridH = 180;
+var gridGap = 100, gridW = 16, gridH = 16;
 
 var container, stats;
 var camera, scene, renderer, controls;
+var particles, uniforms;
 
 var textureLoader = new THREE.TextureLoader();
 
