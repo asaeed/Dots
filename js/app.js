@@ -34,7 +34,7 @@ function init() {
     camera.up = new THREE.Vector3(0, 1, 0);
     camera.lookAt(scene.position);
 
-    dotController = new DotController(scene, gridW, gridH, gridGap, wavesAnimator)
+    dotController = new DotController(scene, gridW, gridH, gridGap, physicsAnimator)
     dotController.setup();
 
     renderer = new THREE.WebGLRenderer();
