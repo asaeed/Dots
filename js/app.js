@@ -1,4 +1,4 @@
-var gridGap = 100, gridW = 16, gridH = 16;
+var gridGap = 100, gridW = 200, gridH = 200;
 
 var container, stats;
 var camera, scene, renderer, controls;
@@ -34,7 +34,7 @@ function init() {
     camera.up = new THREE.Vector3(0, 1, 0);
     camera.lookAt(scene.position);
 
-    dotController = new DotController(scene, gridW, gridH, gridGap, physicsAnimator)
+    dotController = new DotController(scene, gridW, gridH, gridGap, sphereArranger, spinAnimator);
     dotController.setup();
 
     renderer = new THREE.WebGLRenderer();
