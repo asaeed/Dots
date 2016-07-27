@@ -5,13 +5,13 @@ const sphereArranger = {
 
         var radius = 400, segments = 20, rings = 16;
         c.sphere = new THREE.SphereGeometry(radius, segments, rings);
+        var vertices = THREE.GeometryUtils.randomPointsInGeometry(c.sphere, c.numDots);
 
-        var numDots = c.grid.w * c.grid.h;
-        var positions = new Float32Array(numDots * 3);
-        var colors = new Float32Array(numDots * 3);
-        var sizes = new Float32Array(numDots);
+        var positions = new Float32Array(c.numDots * 3);
+        var colors = new Float32Array(c.numDots * 3);
+        var sizes = new Float32Array(c.numDots);
 
-        var vertices = c.sphere.vertices;
+        //var vertices = c.sphere.vertices;
         for ( var i = 0, l = vertices.length; i < l; i ++ ) {
 			var vertex = vertices[i];
 			vertex.toArray( positions, i * 3 );

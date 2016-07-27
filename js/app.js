@@ -1,4 +1,4 @@
-var gridGap = 100, gridW = 200, gridH = 200;
+var gridGap = 100, gridW = 100, gridH = 100;
 
 var container, stats;
 var camera, scene, renderer, controls;
@@ -7,8 +7,8 @@ var particles, uniforms;
 var textureLoader = new THREE.TextureLoader();
 
 var dotController;
+var waveAnimator, sphereAnimator;
 
-var count = 0;
 var mouseX = 0, mouseY = 0;
 
 var ww = window.innerWidth;
@@ -18,7 +18,7 @@ init();
 animate();
 
 function init() {
-    container = document.createElement( 'div' );
+    container = document.createElement('div');
     document.body.appendChild(container);
 
     camera = new THREE.PerspectiveCamera(75, ww/wh, 1, 10000);
@@ -34,7 +34,10 @@ function init() {
     camera.up = new THREE.Vector3(0, 1, 0);
     camera.lookAt(scene.position);
 
-    dotController = new DotController(scene, gridW, gridH, gridGap, sphereArranger, spinAnimator);
+    waveAnimator = new WaveAnimator();
+    sphereAnimator = new SphereAnimator();
+
+    dotController = new DotController(scene, gridW, gridH, gridGap, this.waveAnimator);
     dotController.setup();
 
     renderer = new THREE.WebGLRenderer();
@@ -48,6 +51,7 @@ function init() {
 
     window.addEventListener('resize', onWindowResize, false);
     window.addEventListener('mousemove', onMouseMove, false);
+    window.addEventListener('click', onClick, false);
 }
 
 function onWindowResize() {
@@ -72,10 +76,20 @@ function onMouseMove(e) {
     //     var cube = intersects[0].object;
 }
 
-function animate() {
+var clickCounter = 0;
+function onClick(e) {
+    if (clickCounter++ % 2 == 0)
+        dotController.setAnimator(this.sphereAnimator);
+    else
+        dotController.setAnimator(this.waveAnimator);
+}
+
+function animate(time) {
     requestAnimationFrame(animate);
 
     dotController.update();
+
+    TWEEN.update(time);
 
     if (typeof(controls) !== 'undefined') 
         controls.update();
