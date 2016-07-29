@@ -16,7 +16,7 @@ class DotController {
 
         this.hasTransitionBegun = false;
         this.hasTransitionEnded = false;
-        this.transitionTime = 2; // in seconds
+        this.transitionTime = 8; // in seconds
         this.transitionSteps = 60 * this.transitionTime;
         this.stepCounter = 0;
     }
@@ -52,6 +52,8 @@ class DotController {
 
     setAnimator(animator) {
         this.animator = animator;
+
+        // also reset transition variables
         this.hasTransitionBegun = false;
         this.hasTransitionEnded = false;
         this.stepCounter = 0;
@@ -70,9 +72,12 @@ class DotController {
         this.positionSteps = [];
         this.sizeSteps = [];
         for (var a = 0; a < targetPositions.length; a++) {
+            // setup position increments
             var currentPosition = new THREE.Vector3(positions[a*3], positions[a*3+1], positions[a*3+2]);
-            this.positionSteps.push(targetPositions[a].clone().sub(currentPosition).multiplyScalar(1/this.transitionSteps));
+            var scalar = 1/this.transitionSteps;
+            this.positionSteps.push(targetPositions[a].clone().sub(currentPosition).multiplyScalar(scalar));
         
+            // setup size increments
             this.sizeSteps.push((targetSizes[a] - sizes[a]) / this.transitionSteps)
         }
 
@@ -117,10 +122,11 @@ class DotController {
         var i = 0;
         for ( var ix = 0; ix < this.grid.w; ix++ ) {
             for ( var iy = 0; iy < this.grid.h; iy++ ) {
-                var posX = ix * this.grid.gap - ((this.grid.w * this.grid.gap) / 2);
-                var posZ = iy * this.grid.gap - ((this.grid.h * this.grid.gap) / 2);               
+                var posX = Math.random() * this.grid.w * this.grid.gap - ((this.grid.w * this.grid.gap) / 2);
+                var posY = 2000;
+                var posZ = Math.random() * this.grid.h * this.grid.gap - ((this.grid.h * this.grid.gap) / 2);               
 
-                var vec = new THREE.Vector3(posX, 0, posZ); 
+                var vec = new THREE.Vector3(posX, posY, posZ); 
                 vec.toArray(positions, i * 3);
 
                 var color = new THREE.Color(0xffffff);

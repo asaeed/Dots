@@ -1,4 +1,4 @@
-var gridGap = 100, gridW = 100, gridH = 100;
+var gridGap = 100, gridW = 200, gridH = 200;
 
 var container, stats;
 var camera, scene, renderer, controls;
@@ -7,7 +7,7 @@ var particles, uniforms;
 var textureLoader = new THREE.TextureLoader();
 
 var dotController;
-var waveAnimator, sphereAnimator;
+var waveAnimator, sphereAnimator, mouseAnimator;
 
 var mouseX = 0, mouseY = 0;
 
@@ -36,8 +36,9 @@ function init() {
 
     waveAnimator = new WaveAnimator();
     sphereAnimator = new SphereAnimator();
+    mouseAnimator = new MouseAnimator();
 
-    dotController = new DotController(scene, gridW, gridH, gridGap, this.waveAnimator);
+    dotController = new DotController(scene, gridW, gridH, gridGap, this.mouseAnimator);
     dotController.setup();
 
     renderer = new THREE.WebGLRenderer();
@@ -78,10 +79,13 @@ function onMouseMove(e) {
 
 var clickCounter = 0;
 function onClick(e) {
-    if (clickCounter++ % 2 == 0)
+    if (clickCounter % 3 == 0)
         dotController.setAnimator(this.sphereAnimator);
-    else
+    else if (clickCounter % 3 == 1)
+        dotController.setAnimator(this.mouseAnimator);
+    else 
         dotController.setAnimator(this.waveAnimator);
+    clickCounter++;
 }
 
 function animate(time) {

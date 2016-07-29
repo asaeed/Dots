@@ -8,8 +8,8 @@ class SphereAnimator {
         var c = controller;
         var radius = 400, segments = c.grid.w, rings = c.grid.h;
         var sphere = new THREE.SphereGeometry(radius, segments, rings);
-        var vertices = sphere.vertices;
-        //var vertices = THREE.GeometryUtils.randomPointsInGeometry(c.sphere, c.numDots);
+        //var vertices = sphere.vertices;
+        var vertices = THREE.GeometryUtils.randomPointsInGeometry(sphere, c.numDots);
         
         this.initialPositions = vertices;
 
