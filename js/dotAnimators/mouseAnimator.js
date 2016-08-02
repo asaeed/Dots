@@ -42,10 +42,14 @@ class MouseAnimator {
             for (var iy = 0; iy < c.grid.h; iy++) {
                 //var dotSize = att.size.array[i];
 
-                var distX = Math.abs(ix*c.grid.gap - mouseX*2);
-                var distY = Math.abs(iy*c.grid.gap - mouseY*2);
+                // project mouseX and mouseY to where screen is
+                //var mx = adjustMouseX + mouseX;
+                //var my = adjustMouseY + mouseY;
+
+                var distX = Math.abs(ix*c.grid.gap - mouseX);
+                var distY = Math.abs(iy*c.grid.gap - mouseY);
                 var distance = Math.sqrt(distX * distX + distY * distY);
-                var dotSize = (50 - distance/8) * 4;
+                var dotSize = (50 - distance/8) * 5;
 
                 if (dotSize < c.dotSize) {
                     att.size.array[i] = c.dotSize;

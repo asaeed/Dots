@@ -9,20 +9,31 @@
 class DotController {
     constructor(scene, gridW, gridH, gridGap, animator) {
         this.scene = scene;
-        this.dotSize = 10;
         this.grid = { w: gridW, h: gridH, gap: gridGap };
+        this.gridSize = { w: this.grid.w * this.grid.gap, h: this.grid.h * this.grid.gap };
+        this.dotSize = 10;
         this.numDots = this.grid.w * this.grid.h;
         this.animator = animator;
 
         this.hasTransitionBegun = false;
         this.hasTransitionEnded = false;
-        this.transitionTime = 8; // in seconds
+        this.transitionTime = 4; // in seconds
         this.transitionSteps = 60 * this.transitionTime;
         this.stepCounter = 0;
     }
 
     setup() {
-        var sprite = textureLoader.load('img/disc.png');
+        // setup ground plane
+        this.groundPlane = new THREE.Mesh(
+            new THREE.PlaneBufferGeometry(this.gridSize.w, this.gridSize.h), 
+            new THREE.MeshBasicMaterial({ color: 0x248f24, alphaTest: 0, visible: true })
+        );
+        this.groundPlane.rotateX(Math.PI/2);
+        console.log(this.groundPlane);
+        scene.add(this.groundPlane);
+
+
+        var sprite = textureLoader.load('img/dot.png');
         //var material = new THREE.PointsMaterial({ color: 0xffffff, size: 10, map: sprite });
         var material = new THREE.ShaderMaterial({
             uniforms: {
@@ -38,6 +49,9 @@ class DotController {
         this.geometry = this.getInitialGeometry(this);
         this.points = new THREE.Points(this.geometry, material);
         scene.add(this.points);
+
+        // this is for raycasting
+        //this.mesh = new THREE.Mesh(this.geometry, material);
     }
 
     update() {
@@ -52,6 +66,11 @@ class DotController {
 
     setAnimator(animator) {
         this.animator = animator;
+
+        // reset rotation of pount cloud
+        this.points.rotation.x = 0;
+        this.points.rotation.y = 0;
+        this.points.rotation.z = 0;
 
         // also reset transition variables
         this.hasTransitionBegun = false;
@@ -122,9 +141,9 @@ class DotController {
         var i = 0;
         for ( var ix = 0; ix < this.grid.w; ix++ ) {
             for ( var iy = 0; iy < this.grid.h; iy++ ) {
-                var posX = Math.random() * this.grid.w * this.grid.gap - ((this.grid.w * this.grid.gap) / 2);
-                var posY = 2000;
-                var posZ = Math.random() * this.grid.h * this.grid.gap - ((this.grid.h * this.grid.gap) / 2);               
+                var posX = Math.random() * this.gridSize.w - (this.gridSize.w / 2);
+                var posY = 0;
+                var posZ = Math.random() * this.gridSize.h - (this.gridSize.h / 2);               
 
                 var vec = new THREE.Vector3(posX, posY, posZ); 
                 vec.toArray(positions, i * 3);

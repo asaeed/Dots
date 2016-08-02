@@ -1,4 +1,7 @@
 body {
-	margin: 0;
-	background-color: #333333
+    margin: 0;
+    /* background-color: #333333; */
+    /* background: linear-gradient(to bottom, #11e8bb 0%, #8200c9 100%); */
+    background: linear-gradient(to bottom, #AA076B 0%, #61045F 100%);
+
 }
