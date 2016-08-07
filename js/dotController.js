@@ -90,17 +90,18 @@ class DotController {
         this.startingPositions = positions.slice(0);
         this.startingSizes = sizes.slice(0);
 
-        this.positionSteps = [];
-        this.sizeSteps = [];
-        for (var a = 0; a < this.targetPositions.length; a++) {
-            // setup position increments
-            var currentPosition = new THREE.Vector3(positions[a*3], positions[a*3+1], positions[a*3+2]);
-            var scalar = 1/this.transitionSteps;
-            this.positionSteps.push(this.targetPositions[a].clone().sub(currentPosition).multiplyScalar(scalar));
+        // the below works only for linear easing curve
+        // this.positionSteps = [];
+        // this.sizeSteps = [];
+        // for (var a = 0; a < this.targetPositions.length; a++) {
+        //     // setup position increments
+        //     var currentPosition = new THREE.Vector3(positions[a*3], positions[a*3+1], positions[a*3+2]);
+        //     var scalar = 1/this.transitionSteps;
+        //     this.positionSteps.push(this.targetPositions[a].clone().sub(currentPosition).multiplyScalar(scalar));
         
-            // setup size increments
-            this.sizeSteps.push((this.targetSizes[a] - sizes[a]) / this.transitionSteps)
-        }
+        //     // setup size increments
+        //     this.sizeSteps.push((this.targetSizes[a] - sizes[a]) / this.transitionSteps)
+        // }
 
         this.hasTransitionBegun = true;
     }
@@ -116,20 +117,20 @@ class DotController {
 
         var p = this.stepCounter/this.transitionSteps * this.transitionTime;
 
-        for (var i = 0, l = this.positionSteps.length; i < l; i++) {
-            // positions[i*3]     += this.positionSteps[i].x;
+        for (var i = 0, l = this.targetPositions.length; i < l; i++) {
+            // positions[i*3 + 0] += this.positionSteps[i].x;
             // positions[i*3 + 1] += this.positionSteps[i].y;
             // positions[i*3 + 2] += this.positionSteps[i].z;
 
-            positions[i*3 + 0] = Easing.easeOutQuad(null, this.stepCounter, this.startingPositions[i*3 + 0], this.targetPositions[i].x - this.startingPositions[i*3 + 0], this.transitionSteps);
-            positions[i*3 + 1] = Easing.easeOutQuad(null, this.stepCounter, this.startingPositions[i*3 + 1], this.targetPositions[i].y - this.startingPositions[i*3 + 1], this.transitionSteps);
-            positions[i*3 + 2] = Easing.easeOutQuad(null, this.stepCounter, this.startingPositions[i*3 + 2], this.targetPositions[i].z - this.startingPositions[i*3 + 2], this.transitionSteps);
+            positions[i*3 + 0] = Easing.easeOutCubic(null, this.stepCounter, this.startingPositions[i*3 + 0], this.targetPositions[i].x - this.startingPositions[i*3 + 0], this.transitionSteps);
+            positions[i*3 + 1] = Easing.easeOutCubic(null, this.stepCounter, this.startingPositions[i*3 + 1], this.targetPositions[i].y - this.startingPositions[i*3 + 1], this.transitionSteps);
+            positions[i*3 + 2] = Easing.easeOutCubic(null, this.stepCounter, this.startingPositions[i*3 + 2], this.targetPositions[i].z - this.startingPositions[i*3 + 2], this.transitionSteps);
 
             var color = new THREE.Color(0xffffff);
             color.toArray(colors, i * 3);
 
             //sizes[i] += this.sizeSteps[i];
-            sizes[i] = Easing.easeOutQuad(null, this.stepCounter, this.startingSizes[i], this.targetSizes[i] - this.startingSizes[i], this.transitionSteps);
+            sizes[i] = Easing.easeOutCubic(null, this.stepCounter, this.startingSizes[i], this.targetSizes[i] - this.startingSizes[i], this.transitionSteps);
         }
 
         att.position.needsUpdate = true;
