@@ -49,17 +49,20 @@ class MouseAnimator {
                 var distX = Math.abs(ix*c.grid.gap - mouseX);
                 var distY = Math.abs(iy*c.grid.gap - mouseY);
                 var distance = Math.sqrt(distX * distX + distY * distY);
-                var dotSize = (50 - distance/8) * 5;
+                var dotSize = (50 - distance/8) * 2;
 
                 if (dotSize < c.dotSize) {
                     att.size.array[i] = c.dotSize;
+                    att.position.array[i*3+1] = 0;
                 } else {
-                    att.size.array[i] = dotSize;              
+                    att.size.array[i] = dotSize/2;  
+                    att.position.array[i*3+1] = dotSize;            
                 }
 
                 i++;
             }
         }
         att.size.needsUpdate = true;
+        att.position.needsUpdate = true;
     }
 }

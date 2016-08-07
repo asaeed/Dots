@@ -17,7 +17,7 @@ class DotController {
 
         this.hasTransitionBegun = false;
         this.hasTransitionEnded = false;
-        this.transitionTime = 4; // in seconds
+        this.transitionTime = 2; // in seconds
         this.transitionSteps = 60 * this.transitionTime;
         this.stepCounter = 0;
     }
@@ -29,11 +29,10 @@ class DotController {
             new THREE.MeshBasicMaterial({ color: 0x248f24, alphaTest: 0, visible: true })
         );
         this.groundPlane.rotateX(Math.PI/2);
-        console.log(this.groundPlane);
         scene.add(this.groundPlane);
 
 
-        var sprite = textureLoader.load('img/dot.png');
+        var sprite = textureLoader.load('img/dot3.png');
         //var material = new THREE.PointsMaterial({ color: 0xffffff, size: 10, map: sprite });
         var material = new THREE.ShaderMaterial({
             uniforms: {
@@ -79,32 +78,35 @@ class DotController {
     }
 
     setupTransition() {
-        console.log('in setupTransition');
+        //console.log('in setupTransition');
         this.animator.setup(this);
 
         var positions = this.geometry.attributes.position.array;
         var sizes = this.geometry.attributes.size.array;
 
-        var targetPositions = this.animator.initialPositions;
-        var targetSizes = this.animator.initialSizes;
+        this.targetPositions = this.animator.initialPositions;
+        this.targetSizes = this.animator.initialSizes;
+
+        this.startingPositions = positions.slice(0);
+        this.startingSizes = sizes.slice(0);
 
         this.positionSteps = [];
         this.sizeSteps = [];
-        for (var a = 0; a < targetPositions.length; a++) {
+        for (var a = 0; a < this.targetPositions.length; a++) {
             // setup position increments
             var currentPosition = new THREE.Vector3(positions[a*3], positions[a*3+1], positions[a*3+2]);
             var scalar = 1/this.transitionSteps;
-            this.positionSteps.push(targetPositions[a].clone().sub(currentPosition).multiplyScalar(scalar));
+            this.positionSteps.push(this.targetPositions[a].clone().sub(currentPosition).multiplyScalar(scalar));
         
             // setup size increments
-            this.sizeSteps.push((targetSizes[a] - sizes[a]) / this.transitionSteps)
+            this.sizeSteps.push((this.targetSizes[a] - sizes[a]) / this.transitionSteps)
         }
 
         this.hasTransitionBegun = true;
     }
 
     updateTransition() {
-        console.log('in updateTransition');
+        //console.log('in updateTransition');
         var c = this;
         var att = c.geometry.attributes;
 
@@ -112,15 +114,22 @@ class DotController {
         var colors = att.customColor.array;
         var sizes = att.size.array;
 
+        var p = this.stepCounter/this.transitionSteps * this.transitionTime;
+
         for (var i = 0, l = this.positionSteps.length; i < l; i++) {
-            positions[i*3] += this.positionSteps[i].x;
-            positions[i*3 + 1] += this.positionSteps[i].y;
-            positions[i*3 + 2] += this.positionSteps[i].z;
+            // positions[i*3]     += this.positionSteps[i].x;
+            // positions[i*3 + 1] += this.positionSteps[i].y;
+            // positions[i*3 + 2] += this.positionSteps[i].z;
+
+            positions[i*3 + 0] = Easing.easeOutQuad(null, this.stepCounter, this.startingPositions[i*3 + 0], this.targetPositions[i].x - this.startingPositions[i*3 + 0], this.transitionSteps);
+            positions[i*3 + 1] = Easing.easeOutQuad(null, this.stepCounter, this.startingPositions[i*3 + 1], this.targetPositions[i].y - this.startingPositions[i*3 + 1], this.transitionSteps);
+            positions[i*3 + 2] = Easing.easeOutQuad(null, this.stepCounter, this.startingPositions[i*3 + 2], this.targetPositions[i].z - this.startingPositions[i*3 + 2], this.transitionSteps);
 
             var color = new THREE.Color(0xffffff);
             color.toArray(colors, i * 3);
 
-            sizes[i] += this.sizeSteps[i];
+            //sizes[i] += this.sizeSteps[i];
+            sizes[i] = Easing.easeOutQuad(null, this.stepCounter, this.startingSizes[i], this.targetSizes[i] - this.startingSizes[i], this.transitionSteps);
         }
 
         att.position.needsUpdate = true;
@@ -128,7 +137,7 @@ class DotController {
         att.size.needsUpdate = true;
 
         this.stepCounter++;
-        if (this.stepCounter >= this.transitionSteps) {
+        if (this.stepCounter > this.transitionSteps) {
             this.hasTransitionEnded = true;
         }
     }
@@ -149,7 +158,7 @@ class DotController {
                 vec.toArray(positions, i * 3);
 
                 var color = new THREE.Color(0xffffff);
-                color.toArray( colors, i * 3 );
+                color.toArray(colors, i * 3);
 
                 sizes[i] = this.dotSize;
 

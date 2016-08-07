@@ -5,15 +5,16 @@
   asaeed@gmail.com
 
   TODO:
-  - make dots shiny
+  - how do dots look when glowy
   - stick dots on 3d frog
   - make blob mirror
   - make blobs into lumps in 3d space
   - tween camera in addition to point-cloud
+  - perspective issues on wide screen
 
 */
 
-var gridGap = 100, gridW = 60, gridH = 60;
+var gridGap = 100, gridW = 160, gridH = 40;
 
 var container, stats;
 var camera, scene, renderer, controls, uniforms;
@@ -26,7 +27,7 @@ var vector = new THREE.Vector2();
 var textureLoader = new THREE.TextureLoader();
 
 var dotController;
-var waveAnimator, sphereAnimator, mouseAnimator;
+var waveAnimator, sphereAnimator, mouseAnimator, modelAnimator;
 var screenBox = {};
 
 var ww = window.innerWidth;
@@ -37,14 +38,53 @@ var mouseX = 0, mouseY = 0;
 var adjustMouseX = gridGap * gridW/2 - ww/2;
 var adjustMouseY = gridGap * gridH/2 - wh/2;
 
-init();
-animate();
+var objPerson;
+var objLoader = new THREE.OBJLoader();
+
+var stlFrog;
+var stlLoader = new THREE.STLLoader();
+
+var objMaterial = new THREE.MeshBasicMaterial({color: 'yellow', side: THREE.DoubleSide});
+// objLoader.load('img/person.obj', function (obj) {
+//     obj.traverse(function (child) {
+//         if (child instanceof THREE.Mesh) {
+//             child.material = objMaterial;
+//         }
+//     });
+//     init();
+
+//     objPerson = obj;
+//     objPerson.scale.set(400, 400, 400);
+
+//     console.log(objPerson);
+
+//     //scene.add(obj);
+//     animate();
+// });
+
+stlLoader.load('img/frog.stl', function (geometry) {
+    stlFrog = new THREE.Mesh( geometry, objMaterial );
+    stlFrog.rotateX(-Math.PI/2);
+    stlFrog.rotateZ(-Math.PI/2);
+    stlFrog.translateX(-200);
+    stlFrog.translateZ(-20);
+    init();
+
+    //console.log(stlFrog);
+    //scene.add(stlFrog);
+
+    animate();
+});
+
+// init();
+// animate();
 
 function init() {
     container = document.createElement('div');
     document.body.appendChild(container);
 
     camera = new THREE.PerspectiveCamera(75, ww/wh, 1, 10000);
+    //camera = new THREE.OrthographicCamera(ww/-2, ww/2, wh/2, wh/-2, 1, 10000);
     
     controls = new THREE.OrbitControls(camera);
     controls.enableDamping = true;
@@ -60,11 +100,12 @@ function init() {
     waveAnimator = new WaveAnimator();
     sphereAnimator = new SphereAnimator();
     mouseAnimator = new MouseAnimator();
+    modelAnimator = new ModelAnimator(stlFrog);
 
     dotController = new DotController(scene, gridW, gridH, gridGap, this.mouseAnimator);
     dotController.setup();
 
-    renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     //renderer.autoClear = false;
     renderer.setClearColor(0x000000, 0.0);
     renderer.setPixelRatio(window.devicePixelRatio);
@@ -135,9 +176,11 @@ function onMouseMove(e) {
 
 var clickCounter = 0;
 function onClick(e) {
-    if (clickCounter % 3 == 0)
+    if (clickCounter % 4 == 0)
+        dotController.setAnimator(this.modelAnimator);
+    else if (clickCounter % 4 == 1)
         dotController.setAnimator(this.sphereAnimator);
-    else if (clickCounter % 3 == 1)
+    else if (clickCounter % 4 == 2)
         dotController.setAnimator(this.mouseAnimator);
     else 
         dotController.setAnimator(this.waveAnimator);
