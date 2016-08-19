@@ -1,6 +1,8 @@
 
 class SphereAnimator {
     constructor() {
+        this.cameraPosition = { x: 0, y: 1000, z: 0 };
+        //this.cameraRotation = { x: -Math.PI/2, y: 0, z: 0 };
     }
 
     setup(controller) {
@@ -24,7 +26,8 @@ class SphereAnimator {
         var c = controller;
         var att = c.geometry.attributes;
 
-        c.points.rotateX(0.002);
-        c.points.rotateZ(0.001);
+        //c.points.rotateX(0.002);
+        //c.points.rotateZ(0.001);
+        //camera.rotateX(0.001);
     }
 }

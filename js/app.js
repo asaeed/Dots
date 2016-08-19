@@ -44,7 +44,7 @@ var objLoader = new THREE.OBJLoader();
 var stlFrog;
 var stlLoader = new THREE.STLLoader();
 
-var objMaterial = new THREE.MeshBasicMaterial({color: 'yellow', side: THREE.DoubleSide});
+var yellowMaterial = new THREE.MeshBasicMaterial({ visible: true, color: 'yellow', side: THREE.DoubleSide });
 // objLoader.load('img/person.obj', function (obj) {
 //     obj.traverse(function (child) {
 //         if (child instanceof THREE.Mesh) {
@@ -63,14 +63,14 @@ var objMaterial = new THREE.MeshBasicMaterial({color: 'yellow', side: THREE.Doub
 // });
 
 stlLoader.load('img/frog.stl', function (geometry) {
-    stlFrog = new THREE.Mesh( geometry, objMaterial );
-    stlFrog.rotateX(-Math.PI/2);
-    stlFrog.rotateZ(-Math.PI/2);
-    stlFrog.translateX(-200);
-    stlFrog.translateZ(-20);
-    init();
 
-    //console.log(stlFrog);
+    geometry.rotateX(3*Math.PI/2);
+    geometry.rotateY(-Math.PI/4);
+    //geometry.rotateZ(Math.PI/4);
+    
+    stlFrog = new THREE.Mesh(geometry, yellowMaterial);
+    
+    init();
     //scene.add(stlFrog);
 
     animate();
@@ -86,10 +86,11 @@ function init() {
     camera = new THREE.PerspectiveCamera(75, ww/wh, 1, 10000);
     //camera = new THREE.OrthographicCamera(ww/-2, ww/2, wh/2, wh/-2, 1, 10000);
     
-    controls = new THREE.OrbitControls(camera);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.25;
-    controls.enableZoom = true;
+    // adding controls breaks code based camera rotation
+    // controls = new THREE.OrbitControls(camera);
+    // controls.enableDamping = true;
+    // controls.dampingFactor = 0.25;
+    // controls.enableZoom = true;
 
     scene = new THREE.Scene();
 
@@ -163,15 +164,6 @@ function onMouseMove(e) {
 
     //mouseX = ( event.clientX / window.innerWidth ) * 2 - 1;
     //mouseY = - ( event.clientY / window.innerHeight ) * 2 + 1;
-    
-    // vector.set((e.clientX / ww) * 2 - 1, - (e.clientY / wh ) * 2 + 1);
-    // raycaster.setFromCamera(vector, camera);
-    // //dotController.points.geometry.boundingBox = null;
-    // intersects = raycaster.intersectObject(dotController.points);
-    // if (intersects.length > 0) {
-    //     var cube = intersects[0].object;
-    //     console.log(intersects);
-    // }
 }
 
 var clickCounter = 0;

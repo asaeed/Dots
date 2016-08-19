@@ -1,5 +1,10 @@
 
 class MouseAnimator {
+    constructor() {
+        this.cameraPosition = { x: 0, y: 1000, z: 0 };
+        //this.cameraRotation = { x: -Math.PI/2, y: 0, z: 0 };
+    }
+
     setup(controller) {
         var c = controller;
         this.timer = 0;
