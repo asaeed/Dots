@@ -26,8 +26,8 @@ class SphereAnimator {
         var c = controller;
         var att = c.geometry.attributes;
 
-        //c.points.rotateX(0.002);
-        //c.points.rotateZ(0.001);
+        c.points.rotateX(0.001);
+        c.points.rotateZ(0.002);
         //camera.rotateX(0.001);
     }
 }
