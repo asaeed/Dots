@@ -1,7 +1,7 @@
 
 class WaveAnimator {
     constructor() {
-        this.cameraPosition = { x: 0, y: 400, z: -600 };
+        this.cameraPosition = { x: 0, y: 160, z: -600 };
         //this.cameraRotation = { x: -Math.PI/6, y: 0, z: 0 };
     }
 

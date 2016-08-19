@@ -17,8 +17,8 @@ class DotController {
 
         this.hasTransitionBegun = false;
         this.hasTransitionEnded = false;
-        this.transitionTime = 1; // in seconds
-        this.transitionTimeCam = 2;
+        this.transitionTime = 4; // in seconds
+        this.transitionTimeCam = 6;
         this.transitionSteps = 60 * this.transitionTime;
         this.stepCounter = 0;
 
@@ -124,45 +124,6 @@ class DotController {
                 })
                 .onComplete(function() {
                     console.log('camera rotated');
-                })
-                .start();
-        }
-
-        var camLookAt = this.animator.cameraLookAt;
-        if (typeof camLookAt !== 'undefined') {
-            var startRot = new THREE.Euler().copy(camera.rotation);
-            camera.lookAt(camLookAt);
-            var endRot = new THREE.Euler().copy(camera.rotation);
-            camera.rotation.copy(startRot);
-
-            console.log('startRot', startRot);
-            console.log('endRot', endRot);
-
-            var tweenLookAt = new TWEEN.Tween(camera.rotation)
-                .to({ x: endRot.x, y: endRot.y, z: endRot.z }, this.transitionTimeCam * 1000)
-                .onComplete(function() {
-                    console.log('camera lookedAt');
-                })
-                .start();
-        }
-
-        var camTarget = this.animator.cameraTarget;
-        if (typeof camTarget !== 'undefined') {
-            // controls.target.x = camTarget.x;
-            // controls.target.y = camTarget.y;
-            // controls.target.z = camTarget.z;
-            //var startTarget = { x: controls.target.x, y: controls.target.y, z: controls.target.z };
-            var tweenTarget = new TWEEN.Tween(controls.target)
-                .to({ x: camTarget.x, y: camTarget.y, z: camTarget.z }, this.transitionTimeCam * 1000)
-                .onUpdate(function() {
-                    //camera.lookAt(this.x, this.y, this.z);
-                    //console.log(this.x, this.y, this.z);
-                    console.log(camera.rotation);
-                    //camera.rotation.set(this.x, this.y, this.z);
-                })
-                .onComplete(function() {
-                    console.log('camera retargeted');
-                    console.log(controls);
                 })
                 .start();
         }
