@@ -2,7 +2,7 @@
 class MouseAnimator {
     constructor() {
         this.cameraPosition = { x: 0, y: 1000, z: 0 };
-        //this.cameraRotation = { x: -Math.PI/2, y: 0, z: 0 };
+        this.cameraRotation = { x: -Math.PI/2, y: 0, z: 0 };
     }
 
     setup(controller) {
@@ -58,10 +58,10 @@ class MouseAnimator {
 
                 if (dotSize < c.dotSize) {
                     att.size.array[i] = c.dotSize;
-                    att.position.array[i*3+1] = 0;
+                    //att.position.array[i*3+1] = 0;
                 } else {
                     att.size.array[i] = dotSize/2;  
-                    att.position.array[i*3+1] = dotSize;            
+                    //att.position.array[i*3+1] = dotSize;            
                 }
 
                 i++;

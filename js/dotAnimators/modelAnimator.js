@@ -3,7 +3,7 @@ class ModelAnimator {
     constructor(model) {
         this.model = model;
         this.cameraPosition = { x: 0, y: 500, z: 1000 };
-        //this.cameraRotation = { x: -Math.PI/6, y: 0, z: 0 };
+        this.cameraRotation = { x: -Math.PI/6, y: 0, z: 0 };
     }
 
     setup(controller) {

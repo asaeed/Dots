@@ -18,7 +18,7 @@ class DotController {
         this.hasTransitionBegun = false;
         this.hasTransitionEnded = false;
         this.transitionTime = 4; // in seconds
-        this.transitionTimeCam = 6;
+        this.transitionTimeCam = 7;
         this.transitionSteps = 60 * this.transitionTime;
         this.stepCounter = 0;
 
@@ -101,10 +101,11 @@ class DotController {
         if (typeof camPosition !== 'undefined') {
             var tweenPosition = new TWEEN.Tween(camera.position)
                 .to({ x: camPosition.x, y: camPosition.y, z: camPosition.z }, this.transitionTimeCam * 1000)
-                .easing(TWEEN.Easing.Quadratic.InOut)
+                .easing(TWEEN.Easing.Quadratic.Out)
                 .onUpdate(function() {
-                    // with this, rotation may not be needed
                     // always look at the center of scene
+                    // with this, rotation may not be needed
+                    // actually better to use rotation for smooth transitions
                     camera.lookAt(scene.position);
                 })
                 .onComplete(function() {
@@ -119,7 +120,7 @@ class DotController {
             var endRot = new THREE.Euler(camRotation.x, camRotation.y, camRotation.z, 'XYZ');
             var tweenRotation = new TWEEN.Tween(camera.rotation)
                 .to({ x: endRot.x, y: endRot.y, z: endRot.z }, this.transitionTimeCam * 1000)
-                .easing(TWEEN.Easing.Quadratic.InOut)
+                .easing(TWEEN.Easing.Quadratic.Out)
                 .onUpdate(function() {
                 })
                 .onComplete(function() {
