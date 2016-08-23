@@ -6,10 +6,10 @@
 
   TODO:
   - how do dots look when glowy
-  - stick dots on 3d frog
+  * stick dots on 3d frog
   - make blob mirror
   - make blobs into lumps in 3d space
-  - tween camera in addition to point-cloud
+  * tween camera in addition to point-cloud
   - perspective issues on wide screen
 
 */
@@ -27,7 +27,7 @@ var vector = new THREE.Vector2();
 var textureLoader = new THREE.TextureLoader();
 
 var dotController;
-var waveAnimator, sphereAnimator, mouseAnimator, modelAnimator;
+var waveAnimator, sphereAnimator, mouseAnimator, modelAnimator, blobAnimator;
 var screenBox = {};
 
 var ww = window.innerWidth;
@@ -45,6 +45,13 @@ var stlFrog;
 var stlLoader = new THREE.STLLoader();
 
 var yellowMaterial = new THREE.MeshBasicMaterial({ visible: true, color: 'yellow', side: THREE.DoubleSide });
+var lineMaterial = new THREE.LineBasicMaterial({ color: '#de3e1c' });
+
+// size of incoming blob data
+var bw = 480;
+var bh = 360;
+var lines = [];
+
 // objLoader.load('img/person.obj', function (obj) {
 //     obj.traverse(function (child) {
 //         if (child instanceof THREE.Mesh) {
@@ -102,8 +109,9 @@ function init() {
     sphereAnimator = new SphereAnimator();
     mouseAnimator = new MouseAnimator();
     modelAnimator = new ModelAnimator(stlFrog);
+    blobAnimator = new BlobAnimator();
 
-    dotController = new DotController(scene, gridW, gridH, gridGap, this.mouseAnimator);
+    dotController = new DotController(scene, gridW, gridH, gridGap, this.blobAnimator);
     dotController.setup();
 
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -112,6 +120,7 @@ function init() {
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(ww, wh);
     container.appendChild(renderer.domElement);
+    renderer.render(scene, camera);
 
     stats = new Stats();
     stats.showPanel(0);
@@ -120,6 +129,33 @@ function init() {
     window.addEventListener('resize', onWindowResize, false);
     window.addEventListener('mousemove', onMouseMove, false);
     window.addEventListener('click', onClick, false);
+
+    window.setInterval(function() {
+        if (typeof dotController.animator.blobHandler !== 'undefined') {
+            var data = {};
+            data.blobs = [
+                [
+                    { x: 240, y: 100 }, 
+                    { x: 400, y: 100 }, 
+                    { x: 480, y: 200 }, 
+                    { x: 400, y: 360 },
+                    { x: 300, y: 360 },
+                    { x: 240, y: 100 }
+                ],
+                [
+                    { x: 0, y: 0 }, 
+                    { x: 100, y: 200 }, 
+                    { x: 200, y: 200 }, 
+                    { x: 200, y: 0 }
+                ]
+            ];
+
+            // a quarter of the screen in the middle
+            drawBlobs(data, 0, 0.25);
+
+            //dotController.animator.blobHandler(data.blobs);
+        }
+    }, 10);
 
     onWindowResize();
 }
@@ -133,37 +169,27 @@ function onWindowResize() {
 
     renderer.setSize(ww, wh);
 
-    adjustMouseX = gridGap * gridW/2 - ww/2;
-    adjustMouseY = gridGap * gridH/2 - wh/2;
-
-    /*
-        screenBoxPosX         mousePosX
-        ----------      =     ----------
-        screenBoxW            ww
-
-    */
-
     screenBox.topLeft = screenToWorld(0, 0);
     screenBox.bottomRight = screenToWorld(ww, wh);
+    screenBox.w = screenBox.bottomRight.x - screenBox.topLeft.x;
+    screenBox.h = screenBox.bottomRight.z - screenBox.topLeft.z;
     console.log(screenBox);
-    // if (typeof screenBox.topLeft !== 'undefined') {
-    //     adjustMouseX = (screenBox.bottomRight.x - screenBox.topLeft.x) + gridGap * gridW/2 - ww/2;
-    //     adjustMouseY = screenBox.topLeft.y + gridGap * gridH/2 - wh/2;
-    //     console.log('adjust mouse: ' + adjustMouseX + ', ' + adjustMouseY);
-    // }
+    console.log(ww/wh);
 }
 
 function onMouseMove(e) {
     e.preventDefault();
 
-    mouseX = e.clientX + adjustMouseX;
-    mouseY = e.clientY + adjustMouseY;
+    // what are these magic numbers?
+    // they only work when ww/wh is 9.12
+    mouseX = e.clientX/ww * screenBox.w + 1000;
+    mouseY = e.clientY/wh * screenBox.h + 1200;
 
-    //mouseX = e.clientX/ww * (screenBox.bottomRight.x - screenBox.topLeft.x) + screenBox.topLeft.x;
-    //mouseY = e.clientY/wh * (screenBox.bottomRight.y - screenBox.topLeft.y) + screenBox.topLeft.y;
+    // var mousePos = screenToWorld(e.clientX, e.clientY);
+    // mouseX = mousePos.x;
+    // mouseY = mousePos.z;
 
-    //mouseX = ( event.clientX / window.innerWidth ) * 2 - 1;
-    //mouseY = - ( event.clientY / window.innerHeight ) * 2 + 1;
+    //console.log(mouseX, mouseY);
 }
 
 var clickCounter = 0;
@@ -197,11 +223,37 @@ function animate(time) {
 function screenToWorld(x, y) {
     vector.set((x / ww) * 2 - 1, - (y / wh ) * 2 + 1);
     raycaster.setFromCamera(vector, camera);
-    intersects = raycaster.intersectObject(dotController.points);
+    intersects = raycaster.intersectObject(dotController.groundPlane);
     if (intersects.length > 0) {
         return intersects[0].point;
     } else {
         return null;
+    }
+}
+
+function drawBlobs(data, min, max) {
+    // remove old lines
+    for (var h = 0; h < lines.length; h++) {
+        scene.remove(lines[h]);
+    }
+    lines = [];
+
+    for (var i = 0; i < data.blobs.length; i++) {
+        var blobPoints = data.blobs[i];
+        var geometry = new THREE.Geometry();
+        for (var j = 0; j < blobPoints.length; j++) {
+            var rangeSize = screenBox.w * max - screenBox.w * min;
+            var rangeMin = screenBox.w * min;
+
+            var x = blobPoints[j].x * rangeSize/bw + rangeMin;
+            var y = blobPoints[j].y * screenBox.h/bh;
+
+            geometry.vertices.push(new THREE.Vector3(x - screenBox.w/2, 0, -y + screenBox.h/2));        
+        }
+
+        // draw contour
+        lines.push(new THREE.Line(geometry, lineMaterial));
+        scene.add(lines[i]);
     }
 }
 

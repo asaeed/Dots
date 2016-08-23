@@ -28,11 +28,10 @@ class DotController {
         // setup ground plane
         this.groundPlane = new THREE.Mesh(
             new THREE.PlaneBufferGeometry(this.gridSize.w, this.gridSize.h), 
-            new THREE.MeshBasicMaterial({ color: 0x248f24, alphaTest: 0, visible: true })
+            new THREE.MeshBasicMaterial({ color: 0x248f24, alphaTest: 0, visible: false })
         );
-        this.groundPlane.rotateX(Math.PI/2);
+        this.groundPlane.rotateX(Math.PI/2 * 3);
         scene.add(this.groundPlane);
-
 
         var sprite = textureLoader.load('img/dot.png');
         //var material = new THREE.PointsMaterial({ color: 0xffffff, size: 10, map: sprite });
