@@ -3,6 +3,8 @@ class BlobAnimator {
     constructor() {
         this.cameraPosition = { x: 0, y: 1000, z: 0 };
         this.cameraRotation = { x: -Math.PI/2, y: 0, z: 0 };
+
+        this.ccc = 0;
     }
 
     setup(controller) {
@@ -39,61 +41,50 @@ class BlobAnimator {
     }
 
     update(controller) {
-        var c = controller;
-        var att = c.geometry.attributes;
 
-        var i = 0;
-        for (var ix = 0; ix < c.grid.w; ix++) {
-            for (var iy = 0; iy < c.grid.h; iy++) {
-                //var dotSize = att.size.array[i];
-
-                var distX = Math.abs(ix*c.grid.gap - mouseX);
-                var distY = Math.abs(iy*c.grid.gap - mouseY);
-                var distance = Math.sqrt(distX * distX + distY * distY);
-                var dotSize = (50 - distance/8);
-
-                if (dotSize < c.dotSize) {
-                    att.size.array[i] = c.dotSize;
-                    //att.position.array[i*3+1] = 0;
-                } else {
-                    att.size.array[i] = dotSize;  
-                    //att.position.array[i*3+1] = dotSize * 2;            
-                }
-
-                i++;
-            }
-        }
-        att.size.needsUpdate = true;
-        att.position.needsUpdate = true;
     }
 
-    blobHandler(blobs) {
+    blobHandler(blobs, controller, min, max) {
         var c = controller;
         var att = c.geometry.attributes;
+        
 
-        var i = 0;
-        for (var ix = 0; ix < c.grid.w; ix++) {
-            for (var iy = 0; iy < c.grid.h; iy++) {
-                //var dotSize = att.size.array[i];
+        for (var i = 0; i < blobs.length; i++) {
+            var blobPoints = blobs[i];
+            var minX = null, maxX = null, minY = null, maxY = null;
+            var projectedBlob = [];
+            for (var j = 0; j < blobPoints.length; j++) {
+                var rangeSize = screenBox.w * max - screenBox.w * min;
+                var rangeMin = screenBox.w * min;
 
-                var distX = Math.abs(ix*c.grid.gap - mouseX);
-                var distY = Math.abs(iy*c.grid.gap - mouseY);
-                var distance = Math.sqrt(distX * distX + distY * distY);
-                var dotSize = (50 - distance/8) * 2;
+                var x = blobPoints[j].x * rangeSize/bw + rangeMin - screenBox.w/2;
+                var z = blobPoints[j].y * screenBox.h/bh - screenBox.h/2;
+                projectedBlob.push([x, z]);
 
-                if (dotSize < c.dotSize) {
-                    att.size.array[i] = c.dotSize;
-                    //att.position.array[i*3+1] = 0;
-                } else {
-                    att.size.array[i] = dotSize/2;  
-                    //att.position.array[i*3+1] = dotSize;            
+                // keep track of the bounding box
+                if (minX == null || x < minX)
+                    minX = x;
+                if (maxX == null || x > maxX)
+                    maxX = x;
+                if (minY == null || z < minY) 
+                    minY = z;
+                if (maxY == null || z > maxY)
+                    maxY = z;
+            }
+
+            // get dots within that bounding box
+            for (var ix = minX; ix < maxX; ix += gridGap) {
+                for (var iy = minY; iy < maxY; iy += gridGap) {
+                    if (isPointInPolygon([ix, iy], projectedBlob)) {
+                        var x = Math.floor(ix/gridGap) + gridW/2 + 2;
+                        var y = Math.floor(iy/gridGap) + gridH/2 + 1;
+                        var k = x * gridH - y;
+                        att.size.array[k] = c.dotSize * 2;
+                    }
                 }
-
-                i++;
             }
         }
         att.size.needsUpdate = true;
         att.position.needsUpdate = true;
-        
     }
 }

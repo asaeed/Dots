@@ -153,9 +153,9 @@ function init() {
             // a quarter of the screen in the middle
             drawBlobs(data, 0, 0.25);
 
-            //dotController.animator.blobHandler(data.blobs);
+            dotController.animator.blobHandler(data.blobs, dotController, 0, 0.25);
         }
-    }, 10);
+    }, 100);
 
     onWindowResize();
 }
@@ -245,10 +245,10 @@ function drawBlobs(data, min, max) {
             var rangeSize = screenBox.w * max - screenBox.w * min;
             var rangeMin = screenBox.w * min;
 
-            var x = blobPoints[j].x * rangeSize/bw + rangeMin;
-            var y = blobPoints[j].y * screenBox.h/bh;
+            var x = blobPoints[j].x * rangeSize/bw + rangeMin - screenBox.w/2;
+            var z = -blobPoints[j].y * screenBox.h/bh + screenBox.h/2;
 
-            geometry.vertices.push(new THREE.Vector3(x - screenBox.w/2, 0, -y + screenBox.h/2));        
+            geometry.vertices.push(new THREE.Vector3(x, 0, z));        
         }
 
         // draw contour
