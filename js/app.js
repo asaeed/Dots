@@ -14,7 +14,8 @@
 
 */
 
-var gridGap = 100, gridW = 160, gridH = 40;
+var gridGap = 20, gridW = 160, gridH = 40;
+var fov = 15;
 
 var container, stats;
 var camera, scene, renderer, controls, uniforms;
@@ -79,7 +80,6 @@ stlLoader.load('img/frog.stl', function (geometry) {
 
     init();
     //scene.add(stlFrog);
-
     animate();
 });
 
@@ -92,7 +92,7 @@ function init() {
     container = document.createElement('div');
     document.body.appendChild(container);
 
-    camera = new THREE.PerspectiveCamera(75, ww/wh, 1, 10000);
+    camera = new THREE.PerspectiveCamera(fov, ww/wh, 1, 10000);
     //camera = new THREE.OrthographicCamera(ww/-2, ww/2, wh/2, wh/-2, 1, 10000);
 
     // adding controls breaks code based camera rotation
@@ -112,6 +112,7 @@ function init() {
     mouseAnimator = new MouseAnimator();
     modelAnimator = new ModelAnimator(stlFrog);
     blobAnimator = new BlobAnimator();
+    newAnimator = new NewAnimator();
 
     dotController = new DotController(scene, gridW, gridH, gridGap, blobAnimator);
     dotController.setup();
@@ -220,11 +221,13 @@ function onMouseMove(e) {
 var clickCounter = 0;
 function onClick(e) {
     if (clickCounter % 4 == 0)
-        dotController.setAnimator(this.modelAnimator);
+        dotController.setAnimator(this.newAnimator);
     else if (clickCounter % 4 == 1)
-        dotController.setAnimator(this.sphereAnimator);
+        dotController.setAnimator(this.modelAnimator);
     else if (clickCounter % 4 == 2)
-        dotController.setAnimator(this.mouseAnimator);
+        dotController.setAnimator(this.sphereAnimator);
+    else if (clickCounter % 4 == 3)
+        dotController.setAnimator(this.blobAnimator);
     else
         dotController.setAnimator(this.waveAnimator);
     clickCounter++;
