@@ -1,6 +1,6 @@
 
-/* 
-    this version requires changing main app from CanvasRenderer to WebGLRenderer 
+/*
+    this version requires changing main app from CanvasRenderer to WebGLRenderer
     using point cloud allows for thousands of particles instead of hundreds
     using ShaderMaterial + BufferGeometry is not simple to use, but allows control of position, rotation, scale, and color
     see dotController-points-no-scale and dotController-sprites for other options
@@ -27,7 +27,7 @@ class DotController {
     setup() {
         // setup ground plane
         this.groundPlane = new THREE.Mesh(
-            new THREE.PlaneBufferGeometry(this.gridSize.w, this.gridSize.h), 
+            new THREE.PlaneBufferGeometry(this.gridSize.w, this.gridSize.h),
             new THREE.MeshBasicMaterial({ color: 0x248f24, alphaTest: 0, visible: false })
         );
         this.groundPlane.rotateX(Math.PI/2 * 3);
@@ -171,9 +171,9 @@ class DotController {
             for ( var iy = 0; iy < this.grid.h; iy++ ) {
                 var posX = Math.random() * this.gridSize.w - (this.gridSize.w / 2);
                 var posY = 0;
-                var posZ = Math.random() * this.gridSize.h - (this.gridSize.h / 2);               
+                var posZ = Math.random() * this.gridSize.h - (this.gridSize.h / 2);
 
-                var vec = new THREE.Vector3(posX, posY, posZ); 
+                var vec = new THREE.Vector3(posX, posY, posZ);
                 vec.toArray(positions, i * 3);
 
                 var color = new THREE.Color(0xffffff);

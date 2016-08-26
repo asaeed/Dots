@@ -74,9 +74,9 @@ stlLoader.load('img/frog.stl', function (geometry) {
     geometry.rotateX(3*Math.PI/2);
     geometry.rotateY(-Math.PI/4);
     //geometry.rotateZ(Math.PI/4);
-    
+
     stlFrog = new THREE.Mesh(geometry, yellowMaterial);
-    
+
     init();
     //scene.add(stlFrog);
 
@@ -87,12 +87,14 @@ stlLoader.load('img/frog.stl', function (geometry) {
 // animate();
 
 function init() {
+    initWebSocket('localhost', 0.25, 0.50);
+
     container = document.createElement('div');
     document.body.appendChild(container);
 
     camera = new THREE.PerspectiveCamera(75, ww/wh, 1, 10000);
     //camera = new THREE.OrthographicCamera(ww/-2, ww/2, wh/2, wh/-2, 1, 10000);
-    
+
     // adding controls breaks code based camera rotation
     // controls = new THREE.OrbitControls(camera);
     // controls.enableDamping = true;
@@ -111,7 +113,7 @@ function init() {
     modelAnimator = new ModelAnimator(stlFrog);
     blobAnimator = new BlobAnimator();
 
-    dotController = new DotController(scene, gridW, gridH, gridGap, this.blobAnimator);
+    dotController = new DotController(scene, gridW, gridH, gridGap, blobAnimator);
     dotController.setup();
 
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -135,29 +137,52 @@ function init() {
             var data = {};
             data.blobs = [
                 [
-                    { x: 240, y: 100 }, 
-                    { x: 400, y: 100 }, 
-                    { x: 480, y: 200 }, 
+                    { x: 240, y: 100 },
+                    { x: 400, y: 100 },
+                    { x: 480, y: 200 },
                     { x: 400, y: 360 },
                     { x: 300, y: 360 },
                     { x: 240, y: 100 }
                 ],
                 [
-                    { x: 0, y: 0 }, 
-                    { x: 100, y: 200 }, 
-                    { x: 200, y: 200 }, 
+                    { x: 0, y: 0 },
+                    { x: 100, y: 200 },
+                    { x: 200, y: 200 },
                     { x: 200, y: 0 }
                 ]
             ];
 
             // a quarter of the screen in the middle
-            drawBlobs(data, 0, 0.25);
-
-            dotController.animator.blobHandler(data.blobs, dotController, 0, 0.25);
+            //drawBlobs(data, 0.75, 1);
+            dotController.animator.blobHandler(data.blobs, 0.75, 1);
         }
     }, 100);
 
     onWindowResize();
+}
+
+function initWebSocket(host, min, max) {
+    var ws = new WebSocket('ws://' + host + ':8181/');
+
+    ws.onopen = function() {
+      ws.send('{ type: "blob" }');
+      console.log('Message is sent...');
+    };
+
+    ws.onmessage = function(e) {
+      var data = JSON.parse(e.data);
+
+      // for debugging - red line blobs
+      //drawBlobs(data, min, max);
+
+      // if the animator can handle blobs...
+      if (typeof dotController.animator.blobHandler !== 'undefined')
+        dotController.animator.blobHandler(data.blobs, min, max);
+    };
+
+    ws.onclose = function() {
+      console.log('Connection is closed...');
+    };
 }
 
 function onWindowResize() {
@@ -200,7 +225,7 @@ function onClick(e) {
         dotController.setAnimator(this.sphereAnimator);
     else if (clickCounter % 4 == 2)
         dotController.setAnimator(this.mouseAnimator);
-    else 
+    else
         dotController.setAnimator(this.waveAnimator);
     clickCounter++;
 }
@@ -212,7 +237,7 @@ function animate(time) {
 
     TWEEN.update(time);
 
-    if (typeof(controls) !== 'undefined') 
+    if (typeof(controls) !== 'undefined')
         controls.update();
 
     stats.update();
@@ -246,9 +271,9 @@ function drawBlobs(data, min, max) {
             var rangeMin = screenBox.w * min;
 
             var x = blobPoints[j].x * rangeSize/bw + rangeMin - screenBox.w/2;
-            var z = -blobPoints[j].y * screenBox.h/bh + screenBox.h/2;
+            var z = blobPoints[j].y * screenBox.h/bh - screenBox.h/2;
 
-            geometry.vertices.push(new THREE.Vector3(x, 0, z));        
+            geometry.vertices.push(new THREE.Vector3(x, 0, z));
         }
 
         // draw contour
@@ -256,4 +281,3 @@ function drawBlobs(data, min, max) {
         scene.add(lines[i]);
     }
 }
-
