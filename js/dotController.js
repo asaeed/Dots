@@ -49,9 +49,6 @@ class DotController {
         this.geometry = this.getInitialGeometry(this);
         this.points = new THREE.Points(this.geometry, material);
         scene.add(this.points);
-
-        // this is for raycasting
-        //this.mesh = new THREE.Mesh(this.geometry, material);
     }
 
     update() {
@@ -187,7 +184,7 @@ class DotController {
 
         var geometry = new THREE.BufferGeometry();
         geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
-        geometry.addAttribute( 'customColor', new THREE.BufferAttribute( colors, 3 ) );
+        geometry.addAttribute('customColor', new THREE.BufferAttribute( colors, 3 ));
         geometry.addAttribute('size', new THREE.BufferAttribute(sizes, 1));
         return geometry;
     }

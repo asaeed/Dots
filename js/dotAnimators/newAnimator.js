@@ -41,7 +41,7 @@ class NewAnimator {
     }
 
     update(controller) {
-
+        this.timer += 0.1;
     }
 
     blobHandler(blobs, min, max) {
@@ -96,8 +96,12 @@ class NewAnimator {
 
                 if (isInBlob) {
                     att.size.array[k] = c.dotSize * 3;
+
+                    var dotY = (Math.sin((ix + this.timer) * 0.3) * 50) + (Math.sin((iy + this.timer) * 0.5) * 50);
+                    att.position.array[k*3+1] = dotY;
                 } else {
                     att.size.array[k] = c.dotSize;
+                    att.position.array[k*3+1] = 0;
                 }
             }
         }

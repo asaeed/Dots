@@ -157,7 +157,7 @@ function init() {
             //drawBlobs(data, 0.75, 1);
             dotController.animator.blobHandler(data.blobs, 0.75, 1);
         }
-    }, 100);
+    }, 10);
 
     onWindowResize();
 }
