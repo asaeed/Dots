@@ -3,8 +3,6 @@ class NewAnimator {
     constructor() {
         this.cameraPosition = { x: 0, y: 600, z: 600 };
         this.cameraRotation = { x: -Math.PI/4, y: 0, z: 0 };
-
-        this.ccc = 0;
     }
 
     setup(controller) {
@@ -41,6 +39,25 @@ class NewAnimator {
     }
 
     update(controller) {
+        var c = controller;
+        var att = c.geometry.attributes;
+
+        console.log(c.dotSize, att.size.array[0]);
+
+        var i = 0;
+        for (var ix = 0; ix < c.grid.w; ix++) {
+            for (var iy = 0; iy < c.grid.h; iy++) {
+                if (att.size.array[i] == c.dotSize*3) {
+                    att.position.array[i*3+1] += att.velocity.array[i*3+1];
+                } else {
+                    if (att.position.array[i*3+1] != 0)
+                        att.position.array[i*3+1] -= att.velocity.array[i*3+1];
+                }
+                i++;
+            }
+        }
+        att.position.needsUpdate = true;
+
         this.timer += 0.1;
     }
 
@@ -97,16 +114,16 @@ class NewAnimator {
                 if (isInBlob) {
                     att.size.array[k] = c.dotSize * 3;
 
-                    var dotY = (Math.sin((ix + this.timer) * 0.3) * 50) + (Math.sin((iy + this.timer) * 0.5) * 50);
-                    att.position.array[k*3+1] = dotY;
+                    //var dotY = (Math.sin((ix + this.timer) * 0.3) * 50) + (Math.sin((iy + this.timer) * 0.5) * 50);
+                    //att.position.array[k*3+1] = dotY;
                 } else {
                     att.size.array[k] = c.dotSize;
-                    att.position.array[k*3+1] = 0;
+                    //att.position.array[k*3+1] = 0;
                 }
             }
         }
 
         att.size.needsUpdate = true;
-        att.position.needsUpdate = true;
+        //att.position.needsUpdate = true;
     }
 }

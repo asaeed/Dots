@@ -15,9 +15,9 @@ class ModelAnimator {
         //var vertices = THREE.GeometryUtils.randomPointsInGeometry(sphere, c.numDots);
         var frogGeometry = new THREE.Geometry().fromBufferGeometry(stlFrog.geometry);
         var vertices = THREE.GeometryUtils.randomPointsInGeometry(frogGeometry, c.numDots);
-        
+
         for (var a = 0; a < vertices.length; a++) {
-            vertices[a] = vertices[a].multiplyScalar(10);
+            vertices[a] = vertices[a].multiplyScalar(8);
             vertices[a].x -= 400;
         }
 

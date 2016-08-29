@@ -14,8 +14,8 @@
 
 */
 
-var gridGap = 20, gridW = 160, gridH = 40;
-var fov = 15;
+var gridGap = 60, gridW = 160, gridH = 40;
+var fov = 45;
 
 var container, stats;
 var camera, scene, renderer, controls, uniforms;
@@ -220,13 +220,13 @@ function onMouseMove(e) {
 
 var clickCounter = 0;
 function onClick(e) {
-    if (clickCounter % 4 == 0)
+    if (clickCounter % 5 == 0)
         dotController.setAnimator(this.newAnimator);
-    else if (clickCounter % 4 == 1)
+    else if (clickCounter % 5 == 1)
         dotController.setAnimator(this.modelAnimator);
-    else if (clickCounter % 4 == 2)
+    else if (clickCounter % 5 == 2)
         dotController.setAnimator(this.sphereAnimator);
-    else if (clickCounter % 4 == 3)
+    else if (clickCounter % 5 == 3)
         dotController.setAnimator(this.blobAnimator);
     else
         dotController.setAnimator(this.waveAnimator);

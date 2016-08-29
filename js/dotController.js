@@ -162,6 +162,7 @@ class DotController {
         var positions = new Float32Array(this.numDots * 3);
         var colors = new Float32Array(this.numDots * 3);
         var sizes = new Float32Array(this.numDots);
+        var velocities = new Float32Array(this.numDots * 3);
 
         var i = 0;
         for ( var ix = 0; ix < this.grid.w; ix++ ) {
@@ -170,13 +171,16 @@ class DotController {
                 var posY = 0;
                 var posZ = Math.random() * this.gridSize.h - (this.gridSize.h / 2);
 
-                var vec = new THREE.Vector3(posX, posY, posZ);
-                vec.toArray(positions, i * 3);
+                var vecP = new THREE.Vector3(posX, posY, posZ);
+                vecP.toArray(positions, i * 3);
 
                 var color = new THREE.Color(0xffffff);
                 color.toArray(colors, i * 3);
 
                 sizes[i] = this.dotSize;
+
+                var vecV = new THREE.Vector3(0, -1, 0);
+                vecV.toArray(velocities, i * 3);
 
                 i++;
             }
@@ -186,6 +190,7 @@ class DotController {
         geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
         geometry.addAttribute('customColor', new THREE.BufferAttribute( colors, 3 ));
         geometry.addAttribute('size', new THREE.BufferAttribute(sizes, 1));
+        geometry.addAttribute('velocity', new THREE.BufferAttribute(velocities, 3));
         return geometry;
     }
 }

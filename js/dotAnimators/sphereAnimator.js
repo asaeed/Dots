@@ -1,18 +1,18 @@
 
 class SphereAnimator {
     constructor() {
-        this.cameraPosition = { x: 900, y: 0, z: 0 };
+        this.cameraPosition = { x: 600, y: 0, z: 0 };
         this.cameraRotation = { x: 0, y: Math.PI/2, z: 0 };
     }
 
     setup(controller) {
         console.log('in SphereAnimator.setup()');
         var c = controller;
-        var radius = 500, segments = c.grid.w, rings = c.grid.h;
+        var radius = 200, segments = c.grid.w, rings = c.grid.h;
         var sphere = new THREE.SphereGeometry(radius, segments, rings);
         //var vertices = sphere.vertices;
         var vertices = THREE.GeometryUtils.randomPointsInGeometry(sphere, c.numDots);
-        
+
         this.initialPositions = vertices;
 
         this.initialSizes = [];
