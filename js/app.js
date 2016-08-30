@@ -14,8 +14,8 @@
 
 */
 
-var gridGap = 60, gridW = 160, gridH = 40;
-var fov = 45;
+var gridGap = 50, gridW = 180, gridH = 24;
+var fov = 30;
 
 var container, stats;
 var camera, scene, renderer, controls, uniforms;
@@ -28,7 +28,7 @@ var vector = new THREE.Vector2();
 var textureLoader = new THREE.TextureLoader();
 
 var dotController;
-var waveAnimator, sphereAnimator, mouseAnimator, modelAnimator, blobAnimator;
+var waveAnimator, sphereAnimator, mouseAnimator, modelAnimator, blobAnimator, holeAnimator, newAnimator;
 var screenBox = {};
 
 var ww = window.innerWidth;
@@ -112,6 +112,7 @@ function init() {
     mouseAnimator = new MouseAnimator();
     modelAnimator = new ModelAnimator(stlFrog);
     blobAnimator = new BlobAnimator();
+    holeAnimator = new HoleAnimator();
     newAnimator = new NewAnimator();
 
     dotController = new DotController(scene, gridW, gridH, gridGap, blobAnimator);
@@ -154,7 +155,7 @@ function init() {
             ];
 
             // a quarter of the screen in the middle
-            //drawBlobs(data, 0.75, 1);
+            drawBlobs(data, 0.75, 1);
             dotController.animator.blobHandler(data.blobs, 0.75, 1);
         }
     }, 10);
@@ -221,7 +222,7 @@ function onMouseMove(e) {
 var clickCounter = 0;
 function onClick(e) {
     if (clickCounter % 5 == 0)
-        dotController.setAnimator(this.newAnimator);
+        dotController.setAnimator(this.holeAnimator);
     else if (clickCounter % 5 == 1)
         dotController.setAnimator(this.modelAnimator);
     else if (clickCounter % 5 == 2)

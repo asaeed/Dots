@@ -1,5 +1,5 @@
 
-class NewAnimator {
+class HoleAnimator {
     constructor() {
         this.cameraPosition = { x: 0, y: 600, z: 660 };
         this.cameraRotation = { x: -Math.PI/4, y: 0, z: 0 };

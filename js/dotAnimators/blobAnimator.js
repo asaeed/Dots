@@ -82,7 +82,7 @@ class BlobAnimator {
         for (var ix = rangeMin - screenBox.w/2; ix < rangeMin + rangeSize - screenBox.w/2; ix += gridGap) {
             for (var iy = -screenBox.h/2; iy < screenBox.h/2; iy += gridGap) {
                 // not sure why the minor adjustment is needed
-                var x = Math.floor(ix/gridGap) + gridW/2 + 2;
+                var x = Math.floor(ix/gridGap) + gridW/2 + 1;
                 var y = Math.floor(iy/gridGap) + gridH/2 + 1;
                 var k = x * gridH - y;
 
