@@ -7,18 +7,15 @@ class ModelAnimator {
     }
 
     setup(controller) {
-        console.log('in ModelAnimator.setup()');
         var c = controller;
-        var radius = 500, segments = c.grid.w, rings = c.grid.h;
-        var sphere = new THREE.SphereGeometry(radius, segments, rings);
-        //var vertices = sphere.vertices;
-        //var vertices = THREE.GeometryUtils.randomPointsInGeometry(sphere, c.numDots);
+
         var frogGeometry = new THREE.Geometry().fromBufferGeometry(stlFrog.geometry);
         var vertices = THREE.GeometryUtils.randomPointsInGeometry(frogGeometry, c.numDots);
 
         for (var a = 0; a < vertices.length; a++) {
-            vertices[a] = vertices[a].multiplyScalar(8);
-            vertices[a].x -= 400;
+            vertices[a] = vertices[a].multiplyScalar(4);
+            vertices[a].x -= 100;
+            vertices[a].y -= 80;
         }
 
         this.initialPositions = vertices;
@@ -30,7 +27,6 @@ class ModelAnimator {
     }
 
     update(controller) {
-        //console.log('in SphereAnimator.update()');
         var c = controller;
         var att = c.geometry.attributes;
 
