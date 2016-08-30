@@ -30,7 +30,7 @@ class WaveAnimator {
                 var color = new THREE.Color(0xffffff);
                 color.toArray( colors, i * 3 );
 
-                sizes[i] = (Math.sin((ix) * 0.3) + 1) * 16 + (Math.sin((iy) * 0.5) + 1) * 8;
+                sizes[i] = (Math.sin((ix) * 0.3) + 1) * 6 + (Math.sin((iy) * 0.5) + 1) * 6;
 
                 i++;
             }
@@ -49,7 +49,7 @@ class WaveAnimator {
                 var dotY = (Math.sin((ix + this.timer) * 0.3) * this.amplitude) + (Math.sin((iy + this.timer) * 0.5) * this.amplitude);
                 attributes.position.array[i*3+1] = dotY;
 
-                var dotSize = (Math.sin((ix + this.timer) * 0.3) + 1) * 16 + (Math.sin((iy + this.timer) * 0.5) + 1) * 8;
+                var dotSize = (Math.sin((ix + this.timer) * 0.3) + 1) * 6 + (Math.sin((iy + this.timer) * 0.5) + 1) * 6;
                 attributes.size.array[i] = dotSize;
                 i++;
             }
