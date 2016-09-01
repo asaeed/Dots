@@ -155,7 +155,7 @@ function init() {
             ];
 
             // a quarter of the screen in the middle
-            drawBlobs(data, 0.75, 1);
+            //drawBlobs(data, 0.75, 1);
             dotController.animator.blobHandler(data.blobs, 0.75, 1);
         }
     }, 10);

@@ -9,11 +9,12 @@ class HoleAnimator {
         var c = this.controller = controller;
         this.timer = 0;
 
-        var positions = new Float32Array(c.numDots * 3);
+        //var positions = new Float32Array(c.numDots * 3);
+        var positions = [];
         var colors = new Float32Array(c.numDots * 3);
         var sizes = new Float32Array(c.numDots);
+        var velocities = [];
 
-        var vertices = [];
         var i = 0;
         for ( var ix = 0; ix < c.grid.w; ix++ ) {
             for ( var iy = 0; iy < c.grid.h; iy++ ) {
@@ -22,27 +23,28 @@ class HoleAnimator {
                 //var posY = (Math.sin((ix) * 0.3) * 50) + (Math.sin((iy) * 0.5) * 50);
                 var posY = 0;
 
-                var vec = new THREE.Vector3(posX, posY, posZ);
-                vec.toArray(positions, i * 3);
-                vertices.push(vec);
+                var vecP = new THREE.Vector3(posX, posY, posZ);
+                //vecP.toArray(positions, i * 3);
+                positions.push(vecP);
 
                 var color = new THREE.Color(0xffffff);
                 color.toArray( colors, i * 3 );
 
                 sizes[i] = c.dotSize;
 
+                velocities.push(new THREE.Vector3(0, -1, 0));
+
                 i++;
             }
         }
-        this.initialPositions = vertices;
+        this.initialPositions = positions;
         this.initialSizes = sizes;
+        this.initialVelocities = velocities;
     }
 
     update(controller) {
         var c = controller;
         var att = c.geometry.attributes;
-
-        console.log(c.dotSize, att.size.array[0]);
 
         var i = 0;
         for (var ix = 0; ix < c.grid.w; ix++) {
@@ -102,7 +104,7 @@ class HoleAnimator {
             for (var iy = -screenBox.h/2; iy < screenBox.h/2; iy += gridGap) {
                 // not sure why the minor adjustment is needed
                 var x = Math.floor(ix/gridGap) + gridW/2 + 2;
-                var y = Math.floor(iy/gridGap) + gridH/2 + 1;
+                var y = Math.floor(iy/gridGap) + gridH/2 + 0;
                 var k = x * gridH - y;
 
                 var isInBlob = false;

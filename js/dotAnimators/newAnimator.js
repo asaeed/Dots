@@ -3,17 +3,24 @@ class NewAnimator {
     constructor() {
         this.cameraPosition = { x: 0, y: 600, z: 660 };
         this.cameraRotation = { x: -Math.PI/4, y: 0, z: 0 };
+
+        this.maxDist = 20;
+        this.maxSteps = 40;
     }
 
     setup(controller) {
         var c = this.controller = controller;
         this.timer = 0;
 
-        var positions = new Float32Array(c.numDots * 3);
+        //var positions = new Float32Array(c.numDots * 3);
+        var positions = [];
         var colors = new Float32Array(c.numDots * 3);
         var sizes = new Float32Array(c.numDots);
+        var velocities = [];
 
-        var vertices = [];
+        this.deltas = [];
+        this.steps = [];
+
         var i = 0;
         for ( var ix = 0; ix < c.grid.w; ix++ ) {
             for ( var iy = 0; iy < c.grid.h; iy++ ) {
@@ -22,36 +29,54 @@ class NewAnimator {
                 //var posY = (Math.sin((ix) * 0.3) * 50) + (Math.sin((iy) * 0.5) * 50);
                 var posY = 0;
 
-                var vec = new THREE.Vector3(posX, posY, posZ);
-                vec.toArray(positions, i * 3);
-                vertices.push(vec);
+                var vecP = new THREE.Vector3(posX, posY, posZ);
+                //vecP.toArray(positions, i * 3);
+                positions.push(vecP);
 
                 var color = new THREE.Color(0xffffff);
                 color.toArray( colors, i * 3 );
 
                 sizes[i] = c.dotSize;
+                var r = Math.random() * 2;
+                velocities.push(new THREE.Vector3(Math.cos(r * Math.PI) * 3, 0, Math.sin(r * Math.PI) * 3));
+
+                this.deltas.push(new THREE.Vector3(Math.cos(r * Math.PI) * 30, 0, Math.sin(r * Math.PI) * 30));
+                this.steps.push(0);
 
                 i++;
             }
         }
-        this.initialPositions = vertices;
+        this.initialPositions = positions;
         this.initialSizes = sizes;
+        this.initialVelocities = velocities;
     }
 
     update(controller) {
         var c = controller;
         var att = c.geometry.attributes;
 
-        console.log(c.dotSize, att.size.array[0]);
-
         var i = 0;
         for (var ix = 0; ix < c.grid.w; ix++) {
             for (var iy = 0; iy < c.grid.h; iy++) {
                 if (att.size.array[i] == c.dotSize*3) {
-                    att.position.array[i*3+1] += att.velocity.array[i*3+1];
+
+                    if (this.steps[i] < this.maxSteps) {
+                        att.position.array[i*3+0] = Easing.easeOutCubic(null, this.steps[i], this.initialPositions[i].x, this.deltas[i].x, this.maxSteps);
+                        this.steps[i]++;
+                    }
+
+                    // if (Math.abs(att.position.array[i*3+0] - this.initialPositions[i].x) < this.maxDist) 
+                    //     att.position.array[i*3+0] += att.velocity.array[i*3+0];
+                    //att.position.array[i*3+1] += att.velocity.array[i*3+1];
+                    // if (Math.abs(att.position.array[i*3+2] - this.initialPositions[i].z) < this.maxDist)
+                    //     att.position.array[i*3+2] += att.velocity.array[i*3+2];
                 } else {
-                    if (att.position.array[i*3+1] != 0)
-                        att.position.array[i*3+1] -= att.velocity.array[i*3+1];
+                    if (att.position.array[i*3+0] != this.initialPositions[i].x) 
+                        att.position.array[i*3+0] -= att.velocity.array[i*3+0];
+                    //if (att.position.array[i*3+1] != this.initialPositions[i].y) 
+                    //    att.position.array[i*3+1] -= att.velocity.array[i*3+1];
+                    // if (att.position.array[i*3+2] != this.initialPositions[i].z) 
+                    //     att.position.array[i*3+2] -= att.velocity.array[i*3+2];
                 }
                 i++;
             }
@@ -102,7 +127,7 @@ class NewAnimator {
             for (var iy = -screenBox.h/2; iy < screenBox.h/2; iy += gridGap) {
                 // not sure why the minor adjustment is needed
                 var x = Math.floor(ix/gridGap) + gridW/2 + 2;
-                var y = Math.floor(iy/gridGap) + gridH/2 + 1;
+                var y = Math.floor(iy/gridGap) + gridH/2 + 0;
                 var k = x * gridH - y;
 
                 var isInBlob = false;

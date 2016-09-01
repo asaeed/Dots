@@ -78,17 +78,22 @@ class DotController {
     }
 
     setupTransition() {
+        var c = this;
+        var att = c.geometry.attributes;
+
         this.animator.setup(this);
 
         // setup starting and target positions to animate to
-        var positions = this.geometry.attributes.position.array;
-        var sizes = this.geometry.attributes.size.array;
+        if (typeof this.animator.initialPositions !== 'undefined')
+            this.targetPositions = this.animator.initialPositions;
+        if (typeof this.animator.initialSizes !== 'undefined')
+            this.targetSizes = this.animator.initialSizes;
+        if (typeof this.animator.initialVelocities !== 'undefined')
+            this.targetVelocities = this.animator.initialVelocities;
 
-        this.targetPositions = this.animator.initialPositions;
-        this.targetSizes = this.animator.initialSizes;
-
-        this.startingPositions = positions.slice(0);
-        this.startingSizes = sizes.slice(0);
+        this.startingPositions = this.geometry.attributes.position.array.slice(0);
+        this.startingSizes = this.geometry.attributes.size.array.slice(0);
+        this.startingVelocities = this.geometry.attributes.size.array.slice(0);
 
         this.hasTransitionBegun = true;
 
@@ -124,6 +129,17 @@ class DotController {
                 })
                 .start();
         }
+
+        // some data doesn't need to tween, set it immediately
+        // TODO: fov could tween tho - try
+        if (typeof this.animator.initialVelocities !== 'undefined')
+            for (var i = 0; i < this.targetVelocities.length; i++) {
+                att.velocity.array[i*3 + 0] = this.targetVelocities[i].x;
+                att.velocity.array[i*3 + 1] = this.targetVelocities[i].y;
+                att.velocity.array[i*3 + 2] = this.targetVelocities[i].z;
+            }
+
+        att.velocity.needsUpdate = true;
     }
 
     updateTransition() {
@@ -179,7 +195,7 @@ class DotController {
 
                 sizes[i] = this.dotSize;
 
-                var vecV = new THREE.Vector3(0, -1, 0);
+                var vecV = new THREE.Vector3(0, 0, 0);
                 vecV.toArray(velocities, i * 3);
 
                 i++;
