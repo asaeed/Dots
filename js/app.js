@@ -14,7 +14,7 @@
 
 */
 
-var gridGap = 30, gridW = 180, gridH = 24;
+var gridGap = 16, gridW = 240, gridH = 32;
 var fov = 20;
 
 var container, stats;

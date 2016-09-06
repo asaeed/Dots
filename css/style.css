@@ -2,7 +2,8 @@ body {
     margin: 0;
     /* background-color: #333333; */
     /* background: linear-gradient(to bottom, #11e8bb 0%, #8200c9 100%); */
-    background: linear-gradient(to bottom, #4b6cb7 0%, #182848 100%);
+    /* background: linear-gradient(to bottom, #4b6cb7 0%, #182848 100%); */
+    background: linear-gradient(to bottom, #111111 0%, #000000 100%);
     overflow-x: hidden;
     overflow-y: hidden;
 }

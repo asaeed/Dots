@@ -27,7 +27,7 @@ class DotController {
     setup() {
         // setup ground plane
         this.groundPlane = new THREE.Mesh(
-            new THREE.PlaneBufferGeometry(this.gridSize.w, this.gridSize.h),
+            new THREE.PlaneBufferGeometry(this.gridSize.w * 2, this.gridSize.h * 2),
             new THREE.MeshBasicMaterial({ color: 0x248f24, alphaTest: 0, visible: false })
         );
         this.groundPlane.rotateX(Math.PI/2 * 3);
