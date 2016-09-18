@@ -14,7 +14,8 @@
 
 */
 
-var gridGap = 16, gridW = 240, gridH = 40;
+//var gridGap = 16, gridW = 240, gridH = 40;
+var gridGap = 12, gridW = 320, gridH = 80;
 var fov = 20;
 
 var container, stats;
@@ -29,6 +30,7 @@ var textureLoader = new THREE.TextureLoader();
 
 var dotController;
 var waveAnimator, sphereAnimator, mouseAnimator, modelAnimator, blobAnimator, holeAnimator, newAnimator;
+var animatorQ;
 var screenBox = {};
 
 var ww = window.innerWidth;
@@ -107,15 +109,19 @@ function init() {
     //camera.up = new THREE.Vector3(0, 1, 0);
     camera.lookAt(scene.position);
 
-    waveAnimator = new WaveAnimator();
-    sphereAnimator = new SphereAnimator();
-    mouseAnimator = new MouseAnimator();
-    modelAnimator = new ModelAnimator(stlFrog);
-    blobAnimator = new BlobAnimator();
-    holeAnimator = new HoleAnimator();
-    newAnimator = new NewAnimator();
+    animatorQ = [
+        //new MouseAnimator(),
+        //new BlobAnimator(),
 
-    dotController = new DotController(scene, gridW, gridH, gridGap, blobAnimator);
+        new PhysicsAnimator(),
+        new NewAnimator(),
+        new HoleAnimator(),
+        new ModelAnimator(stlFrog),
+        new SphereAnimator(),
+        new WaveAnimator(),
+    ] 
+
+    dotController = new DotController(scene, gridW, gridH, gridGap, animatorQ[0]);
     dotController.setup();
 
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -219,18 +225,9 @@ function onMouseMove(e) {
     //console.log(mouseX, mouseY);
 }
 
-var clickCounter = 0;
+var clickCounter = 1;
 function onClick(e) {
-    if (clickCounter % 5 == 0)
-        dotController.setAnimator(this.holeAnimator);
-    else if (clickCounter % 5 == 1)
-        dotController.setAnimator(this.modelAnimator);
-    else if (clickCounter % 5 == 2)
-        dotController.setAnimator(this.sphereAnimator);
-    else if (clickCounter % 5 == 3)
-        dotController.setAnimator(this.waveAnimator);
-    else
-        dotController.setAnimator(this.blobAnimator);
+    dotController.setAnimator(animatorQ[clickCounter % animatorQ.length]);
     clickCounter++;
 }
 

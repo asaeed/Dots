@@ -4,8 +4,8 @@ class NewAnimator {
         this.cameraPosition = { x: 0, y: 600, z: 660 };
         this.cameraRotation = { x: -Math.PI/4, y: 0, z: 0 };
 
-        this.maxDist = 20;
-        this.maxSteps = 40;
+        this.maxDist = 200;
+        this.maxSteps = 80;
     }
 
     setup(controller) {
@@ -40,7 +40,7 @@ class NewAnimator {
                 var r = Math.random() * 2;
                 velocities.push(new THREE.Vector3(Math.cos(r * Math.PI) * 3, 0, Math.sin(r * Math.PI) * 3));
 
-                this.deltas.push(new THREE.Vector3(Math.cos(r * Math.PI) * 30, 0, Math.sin(r * Math.PI) * 30));
+                this.deltas.push(new THREE.Vector3(Math.cos(r * Math.PI) * this.maxDist, 0, Math.sin(r * Math.PI) * this.maxDist));
                 this.steps.push(0);
 
                 i++;
@@ -58,10 +58,12 @@ class NewAnimator {
         var i = 0;
         for (var ix = 0; ix < c.grid.w; ix++) {
             for (var iy = 0; iy < c.grid.h; iy++) {
-                if (att.size.array[i] == c.dotSize*3) {
+                if (att.size.array[i] == c.dotSize * 1.1) {
 
                     if (this.steps[i] < this.maxSteps) {
                         att.position.array[i*3+0] = Easing.easeOutCubic(null, this.steps[i], this.initialPositions[i].x, this.deltas[i].x, this.maxSteps);
+                        att.position.array[i*3+1] = Easing.easeOutCubic(null, this.steps[i], this.initialPositions[i].y, this.deltas[i].y, this.maxSteps);
+                        att.position.array[i*3+2] = Easing.easeOutCubic(null, this.steps[i], this.initialPositions[i].z, this.deltas[i].z, this.maxSteps);
                         this.steps[i]++;
                     }
 
@@ -72,11 +74,11 @@ class NewAnimator {
                     //     att.position.array[i*3+2] += att.velocity.array[i*3+2];
                 } else {
                     if (att.position.array[i*3+0] != this.initialPositions[i].x) 
-                        att.position.array[i*3+0] -= att.velocity.array[i*3+0];
-                    //if (att.position.array[i*3+1] != this.initialPositions[i].y) 
-                    //    att.position.array[i*3+1] -= att.velocity.array[i*3+1];
-                    // if (att.position.array[i*3+2] != this.initialPositions[i].z) 
-                    //     att.position.array[i*3+2] -= att.velocity.array[i*3+2];
+                        att.position.array[i*3+0] -= att.velocity.array[i*3+0];  
+                    if (att.position.array[i*3+1] != this.initialPositions[i].y) 
+                       att.position.array[i*3+1] -= att.velocity.array[i*3+1];
+                    if (att.position.array[i*3+2] != this.initialPositions[i].z) 
+                        att.position.array[i*3+2] -= att.velocity.array[i*3+2];
                 }
                 i++;
             }
@@ -137,13 +139,9 @@ class NewAnimator {
                 }
 
                 if (isInBlob) {
-                    att.size.array[k] = c.dotSize * 3;
-
-                    //var dotY = (Math.sin((ix + this.timer) * 0.3) * 50) + (Math.sin((iy + this.timer) * 0.5) * 50);
-                    //att.position.array[k*3+1] = dotY;
+                    att.size.array[k] = c.dotSize * 1.1;
                 } else {
                     att.size.array[k] = c.dotSize;
-                    //att.position.array[k*3+1] = 0;
                 }
             }
         }

@@ -19,8 +19,9 @@ class WaveAnimator {
         var i = 0;
         for ( var ix = 0; ix < c.grid.w; ix++ ) {
             for ( var iy = 0; iy < c.grid.h; iy++ ) {
-                var posX = ix * c.grid.gap - ((c.grid.w * c.grid.gap) / 2);
-                var posZ = iy * c.grid.gap - ((c.grid.h * c.grid.gap) / 2);
+                var gap = c.grid.gap * 2.5;
+                var posX = ix * gap - ((c.grid.w * gap) / 2);
+                var posZ = iy * gap - ((c.grid.h * gap) / 2);
                 var posY = (Math.sin((ix) * 0.3) * this.amplitude) + (Math.sin((iy) * 0.5) * this.amplitude);
 
                 var vec = new THREE.Vector3(posX, posY, posZ);

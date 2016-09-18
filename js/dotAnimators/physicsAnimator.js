@@ -1,22 +1,154 @@
 
-const physicsAnimator = {
-    update: (controller) => {
-        var c = controller;
-        var attributes = c.geometry.attributes;
-        var i = 0;
-        for (var ix = 0; ix < c.grid.w; ix++) {
-            for (var iy = 0; iy < c.grid.h; iy++) {
-                //var dotY = attributes.position.array[i*3+1];
-                var dotY = (Math.sin((ix + count) * 0.3) * 50) + (Math.sin((iy + count) * 0.5) * 50);
-                attributes.position.array[i*3+1] = dotY;
+class PhysicsAnimator {
+    constructor() {
+        this.cameraPosition = { x: 0, y: 1000, z: 0 };
+        this.cameraRotation = { x: -Math.PI/2, y: 0, z: 0 };
+    }
 
-                var dotSize = (Math.sin((ix + count) * 0.3) + 1) * 8 + (Math.sin((iy + count) * 0.5) + 1) * 4;
-                attributes.size.array[i] = dotSize;
+    setup(controller) {
+        var c = this.controller = controller;
+        this.timer = 0;
+
+        this.accel = new THREE.Vector3(-0.01, 0, 0.03);
+        this.maxPosition = new THREE.Vector3((c.grid.w * c.grid.gap) / 2, 0, (c.grid.h * c.grid.gap) / 2);
+        this.maxVelocity = new THREE.Vector3(2, 0, 10);
+
+        console.log(this.maxPosition);
+
+        //var positions = new Float32Array(c.numDots * 3);
+        var positions = [];
+        var colors = new Float32Array(c.numDots * 3);
+        var sizes = new Float32Array(c.numDots);
+        var velocities = [];
+
+        var i = 0;
+        for ( var ix = 0; ix < c.grid.w; ix++ ) {
+            for ( var iy = 0; iy < c.grid.h; iy++ ) {
+                var posX = ix * c.grid.gap - ((c.grid.w * c.grid.gap) / 2);
+                var posZ = iy * c.grid.gap - ((c.grid.h * c.grid.gap) / 2);
+                //var posY = (Math.sin((ix) * 0.3) * 50) + (Math.sin((iy) * 0.5) * 50);
+                var posY = 0;
+
+                var vecP = new THREE.Vector3(posX, posY, posZ);
+                //vecP.toArray(positions, i * 3);
+                positions.push(vecP);
+
+                var color = new THREE.Color(0xffffff);
+                color.toArray( colors, i * 3 );
+
+                sizes[i] = c.dotSize;
+
+                velocities.push(new THREE.Vector3(0, 0, 0));
+
                 i++;
             }
         }
-        count += 0.1;
-        attributes.position.needsUpdate = true;
-        attributes.size.needsUpdate = true;
+        this.initialPositions = positions;
+        this.initialSizes = sizes;
+        this.initialVelocities = velocities;
+    }
+
+    update(controller) {
+        var c = controller;
+        var att = c.geometry.attributes;
+
+        var i = 0;
+        for (var ix = 0; ix < c.grid.w; ix++) {
+            for (var iy = 0; iy < c.grid.h; iy++) {
+                // increment position using velocity
+                att.position.array[i*3+0] += att.velocity.array[i*3+0];
+                att.position.array[i*3+1] += att.velocity.array[i*3+1];
+                att.position.array[i*3+2] += att.velocity.array[i*3+2];
+
+                // if position has passed bottom, relocate to top
+                if (Math.abs(att.position.array[i*3+0]) > this.maxPosition.x)
+                    att.position.array[i*3+0] = this.maxPosition.x;
+
+                if (Math.abs(att.position.array[i*3+2]) > this.maxPosition.z)
+                    att.position.array[i*3+2] = -this.maxPosition.z;
+
+                // if velocity hasn't hit max, increment it using accel, with a bit of randomness
+                if (Math.abs(att.velocity.array[i*3+0]) < this.maxVelocity.x)
+                    att.velocity.array[i*3+0] += this.accel.x + (Math.random() * 1 - 0.5) * 0.01;
+                if (Math.abs(att.velocity.array[i*3+1]) < this.maxVelocity.y)
+                    att.velocity.array[i*3+1] += this.accel.y;
+                if (Math.abs(att.velocity.array[i*3+2]) < this.maxVelocity.z)
+                    att.velocity.array[i*3+2] += this.accel.z + (Math.random() * 1 - 0.5) * 0.01;
+
+                //this.accel.x += (Math.random(1) - 0.5) * 0.0001;
+                //this.accel.z += (Math.random(1) - 0.5) * 0.0001;
+
+                i++;
+            }
+        }
+        att.position.needsUpdate = true;
+
+        this.timer += 0.1;
+    }
+
+    blobHandler(blobs, min, max) {
+        var c = this.controller;
+        var att = c.geometry.attributes;
+
+        var rangeSize = screenBox.w * max - screenBox.w * min;
+        var rangeMin = screenBox.w * min;
+        //console.log(rangeSize, rangeMin);
+
+        // now effect the ones that fall on blobs
+        // first get projected blob data
+        var projectedBlobs = []
+        for (var i = 0; i < blobs.length; i++) {
+            var blobPoints = blobs[i];
+            var minX = null, maxX = null, minY = null, maxY = null;
+            var projectedBlob = [];
+            for (var j = 0; j < blobPoints.length; j++) {
+                var x = blobPoints[j].x * rangeSize/bw + rangeMin - screenBox.w/2;
+                var z = -blobPoints[j].y * screenBox.h/bh + screenBox.h/2;
+                projectedBlob.push([x, z]);
+
+                // keep track of the bounding box
+                if (minX == null || x < minX)
+                    minX = x;
+                if (maxX == null || x > maxX)
+                    maxX = x;
+                if (minY == null || z < minY)
+                    minY = z;
+                if (maxY == null || z > maxY)
+                    maxY = z;
+            }
+            projectedBlobs.push(projectedBlob);
+        }
+
+        //console.log(minX, maxX, minY, maxY);
+        //console.log(rangeMin - screenBox.w/2, rangeMin + rangeSize - screenBox.w/2, -screenBox.h/2, screenBox.h/2);
+
+        // exhaustive scan - go through all the dots in this 1/4 region
+        for (var ix = rangeMin - screenBox.w/2; ix < rangeMin + rangeSize - screenBox.w/2; ix += gridGap) {
+            for (var iy = -screenBox.h/2; iy < screenBox.h/2; iy += gridGap) {
+                // not sure why the minor adjustment is needed
+                var x = Math.floor(ix/gridGap) + gridW/2 + 2;
+                var y = Math.floor(iy/gridGap) + gridH/2 + 0;
+                var k = x * gridH - y;
+
+                var isInBlob = false;
+                for (var m = 0; m < projectedBlobs.length; m++) {
+                    if (isPointInPolygon([ix, iy], projectedBlobs[m]))
+                        isInBlob = true;
+                }
+
+                if (isInBlob) {
+                    att.size.array[k] = c.dotSize * 1.1;
+
+                    //var dotY = (Math.sin((ix + this.timer) * 0.3) * 50) + (Math.sin((iy + this.timer) * 0.5) * 50);
+                    //att.position.array[k*3+1] = dotY;
+                } else {
+                    att.size.array[k] = c.dotSize;
+                    //att.position.array[k*3+1] = 0;
+                }
+            }
+        }
+
+        att.size.needsUpdate = true;
+        //att.position.needsUpdate = true;
     }
 }
